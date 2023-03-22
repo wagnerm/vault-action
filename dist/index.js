@@ -18526,9 +18526,7 @@ async function exportSecrets() {
         https: {},
         retry: {
             limit: got.defaults.options.retry.limit,
-            methods: [
-                ...got.defaults.options.methods,
-            ],
+            methods: got.defaults.options.retry.methods,
             statusCodes: [
                 ...got.defaults.options.retry.statusCodes,
                 // Vault returns 412 when the token in use hasn't yet been replicated
