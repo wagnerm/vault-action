@@ -556,8 +556,8 @@ class OidcClient {
             const res = yield httpclient
                 .getJson(id_token_url)
                 .catch(error => {
-                throw new Error(`Failed to get ID Token. \n 
-        Error Code : ${error.statusCode}\n 
+                throw new Error(`Failed to get ID Token. \n
+        Error Code : ${error.statusCode}\n
         Error Message: ${error.result.message}`);
             });
             const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
@@ -6392,7 +6392,7 @@ const understoodStatuses = new Set([
 const errorStatusCodes = new Set([
     500,
     502,
-    503, 
+    503,
     504,
 ]);
 
@@ -8766,7 +8766,7 @@ exports.parse = function (s) {
       if(/^:base64:/.test(value))
         return Buffer.from(value.substring(8), 'base64')
       else
-        return /^:/.test(value) ? value.substring(1) : value 
+        return /^:/.test(value) ? value.substring(1) : value
     }
     return value
   })
@@ -18525,6 +18525,10 @@ async function exportSecrets() {
         headers: {},
         https: {},
         retry: {
+            limit: got.defaults.options.retry.limit,
+            methods: [
+                ...got.defaults.options.methods,
+            ],
             statusCodes: [
                 ...got.defaults.options.retry.statusCodes,
                 // Vault returns 412 when the token in use hasn't yet been replicated
@@ -18552,6 +18556,16 @@ async function exportSecrets() {
     const clientKeyRaw = core.getInput('clientKey', { required: false });
     if (clientKeyRaw != null) {
 	    defaultOptions.https.key = Buffer.from(clientKeyRaw, 'base64').toString();
+    }
+
+    const retryVaultTokenRetrieval = core.getInuput('retryVaultTokenRetrieval', { required: false }) != 'false';
+    if (retryVaultTokenRetrieval === true) {
+        defaultOptions.retry.methods.push('POST');
+    }
+
+    const retryLimit = core.getInput('retryLimit', { required: false });
+    if (retryLimit != null) {
+        defaultOptions.retry.limit = parseInt(retryLimit);
     }
 
     for (const [headerName, headerValue] of extraHeaders) {
@@ -18973,8 +18987,8 @@ async function getSecrets(secretRequests, client) {
 
 /**
  * Uses a Jsonata selector retrieve a bit of data from the result
- * @param {object} data 
- * @param {string} selector 
+ * @param {object} data
+ * @param {string} selector
  */
 function selectData(data, selector) {
     const ata = jsonata(selector);
@@ -19139,7 +19153,7 @@ module.exports = require("zlib");
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/ 	
+/******/
 /******/ 	// The require function
 /******/ 	function __nccwpck_require__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -19153,7 +19167,7 @@ module.exports = require("zlib");
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/ 	
+/******/
 /******/ 		// Execute the module function
 /******/ 		var threw = true;
 /******/ 		try {
@@ -19162,16 +19176,16 @@ module.exports = require("zlib");
 /******/ 		} finally {
 /******/ 			if(threw) delete __webpack_module_cache__[moduleId];
 /******/ 		}
-/******/ 	
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/ 	
+/******/
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat */
-/******/ 	
+/******/
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
-/******/ 	
+/******/
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
