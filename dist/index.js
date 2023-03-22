@@ -18556,7 +18556,7 @@ async function exportSecrets() {
 	    defaultOptions.https.key = Buffer.from(clientKeyRaw, 'base64').toString();
     }
 
-    const retryVaultTokenRetrieval = core.getInuput('retryVaultTokenRetrieval', { required: false }) != 'false';
+    const retryVaultTokenRetrieval = core.getInput('retryVaultTokenRetrieval', { required: false }) != 'false';
     if (retryVaultTokenRetrieval === true) {
         defaultOptions.retry.methods.push('POST');
     }
