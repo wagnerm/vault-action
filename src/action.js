@@ -70,7 +70,7 @@ async function exportSecrets() {
         defaultOptions.headers["X-Vault-Namespace"] = vaultNamespace;
     }
 
-    const retryVaultTokenRetrieval = core.getInput('retryVaultTokenRetrieval', { required: false }) != 'false';
+    const retryVaultTokenRetrieval = (core.getInput('retryVaultTokenRetrieval', { required: false }) || 'false').toLowerCase() != 'false';
     if (retryVaultTokenRetrieval === true) {
         defaultOptions.retry.methods.push('POST');
     }
