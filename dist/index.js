@@ -19010,7 +19010,6 @@ async function getSecrets(secretRequests, client) {
 async function selectData(data, selector) {
     const ata = jsonata(selector);
     let result = JSON.stringify(await ata.evaluate(data));
-
     // Compat for custom engines
     if (!result && ((ata.ast().type === "path" && ata.ast()['steps'].length === 1) || ata.ast().type === "string") && selector !== 'data' && 'data' in data) {
         result = JSON.stringify(await jsonata(`data.${selector}`).evaluate(data));
