@@ -18881,7 +18881,7 @@ async function getClientToken(client, method, path, payload) {
         response = await client.post(`${path}`, options);
     } catch (err) {
         if (err instanceof got.HTTPError) {
-            core.setOutput("tokenerrormessage", err.message);
+            core.setOutput("tokenerrorMessage", err.message);
             throw Error(`failed to retrieve vault token. code: ${err.code}, message: ${err.message}, vaultResponse: ${JSON.stringify(err.response.body)}`)
         } else {
             throw err
@@ -19216,7 +19216,7 @@ const { exportSecrets } = __nccwpck_require__(3348);
     try {
         await core.group('Get Vault Secrets', exportSecrets);
     } catch (error) {
-        core.setOutput("errorMessage", error.message);
+        core.setOutput("errormessage", error.message);
         core.setFailed(error.message);
     }
 })();
