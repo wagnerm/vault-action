@@ -18545,6 +18545,7 @@ async function exportSecrets() {
         headers: {},
         https: {},
         retry: {
+            methods: [...got.defaults.options.retry.methods],
             statusCodes: [
                 ...got.defaults.options.retry.statusCodes,
                 // Vault returns 412 when the token in use hasn't yet been replicated
@@ -18580,6 +18581,11 @@ async function exportSecrets() {
 
     if (vaultNamespace != null) {
         defaultOptions.headers["X-Vault-Namespace"] = vaultNamespace;
+    }
+
+    const retryVaultTokenRetrieval = (core.getInput('retryVaultTokenRetrieval', { required: false }) || 'false').toLowerCase() != 'false';
+    if (retryVaultTokenRetrieval === true) {
+        defaultOptions.retry.methods.push('POST');
     }
 
     const vaultToken = await retrieveToken(vaultMethod, got.extend(defaultOptions));
