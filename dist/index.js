@@ -19222,8 +19222,9 @@ const { exportSecrets } = __nccwpck_require__(3348);
     try {
         await core.group('Get Vault Secrets', exportSecrets);
     } catch (error) {
-        core.setOutput("errormessage", error.message);
-        core.setFailed(error.message);
+        core.setOutput("errormessage", error?.message);
+        core.setFailed(error?.message);
+        throw error;
     }
 })();
 
