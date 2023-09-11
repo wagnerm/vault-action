@@ -18768,7 +18768,14 @@ async function retrieveToken(method, client) {
             const githubAudience = core.getInput('jwtGithubAudience', { required: false });
 
             if (!privateKey) {
-                jwt = await core.getIDToken(githubAudience)
+                try {
+                    core.debug("Fetching ID token from GitHub OIDC provider")
+                    jwt = await core.getIDToken(githubAudience)
+                } catch (err) {
+                    core.error("Error fetching ID token from GitHub OIDC provider")
+                    core.setOutput(err?.message)
+                    throw err
+                }
             } else {
                 jwt = generateJwt(privateKey, keyPassword, Number(tokenTtl));
             }
@@ -18822,8 +18829,13 @@ function generateJwt(privateKey, keyPassword, ttl) {
         repository: process.env.GITHUB_REPOSITORY,
         ref: process.env.GITHUB_REF
     };
-    const decryptedKey = rsasign.KEYUTIL.getKey(privateKey, keyPassword);
-    return rsasign.KJUR.jws.JWS.sign(alg, JSON.stringify(header), JSON.stringify(payload), decryptedKey);
+    try{
+        const decryptedKey = rsasign.KEYUTIL.getKey(privateKey, keyPassword);
+        return rsasign.KJUR.jws.JWS.sign(alg, JSON.stringify(header), JSON.stringify(payload), decryptedKey);
+    } catch (err) {
+        core.setOutput(err?.message)
+        throw Error("Unable to generate Jwt")
+    }
 }
 
 /***
