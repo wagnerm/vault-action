@@ -18772,9 +18772,7 @@ async function retrieveToken(method, client) {
                     core.debug("Fetching ID token from GitHub OIDC provider")
                     jwt = await core.getIDToken(githubAudience)
                 } catch (err) {
-                    core.error("Error fetching ID token from GitHub OIDC provider")
-                    core.setOutput(err?.message)
-                    throw err
+                    throw Error(`Error fetching ID token from GitHub OIDC provider., message: ${err.message}`)
                 }
             } else {
                 jwt = generateJwt(privateKey, keyPassword, Number(tokenTtl));
@@ -18833,8 +18831,7 @@ function generateJwt(privateKey, keyPassword, ttl) {
         const decryptedKey = rsasign.KEYUTIL.getKey(privateKey, keyPassword);
         return rsasign.KJUR.jws.JWS.sign(alg, JSON.stringify(header), JSON.stringify(payload), decryptedKey);
     } catch (err) {
-        core.setOutput(err?.message)
-        throw Error("Unable to generate Jwt")
+        throw Error(`Unable to generate Jwt. message: ${err?.message}`)
     }
 }
 
