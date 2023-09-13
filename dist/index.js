@@ -18737,6 +18737,7 @@ const core = __nccwpck_require__(2186);
 const rsasign = __nccwpck_require__(7175);
 const fs = __nccwpck_require__(7147);
 const { default: got } = __nccwpck_require__(3061);
+const { error } = __nccwpck_require__(6206);
 
 const defaultKubernetesTokenPath = '/var/run/secrets/kubernetes.io/serviceaccount/token'
 /***
@@ -18772,7 +18773,9 @@ async function retrieveToken(method, client) {
                     core.debug("Fetching ID token from GitHub OIDC provider")
                     jwt = await core.getIDToken(githubAudience)
                 } catch (err) {
-                    throw Error(`Error fetching ID token from GitHub OIDC provider., message: ${err.message}`)
+                    const new_error = new Error(`Error fetching ID token from GitHub OIDC provider., message: ${err.message}`);
+                    new_error.stack += err.stack;
+                    throw new_error;
                 }
             } else {
                 jwt = generateJwt(privateKey, keyPassword, Number(tokenTtl));
@@ -18831,7 +18834,9 @@ function generateJwt(privateKey, keyPassword, ttl) {
         const decryptedKey = rsasign.KEYUTIL.getKey(privateKey, keyPassword);
         return rsasign.KJUR.jws.JWS.sign(alg, JSON.stringify(header), JSON.stringify(payload), decryptedKey);
     } catch (err) {
-        throw Error(`Unable to generate Jwt. message: ${err?.message}`)
+        const new_error = new Error(`Error generating the jwt., message: ${err?.message}`);
+        new_error.stack += err.stack;
+        throw new_error;
     }
 }
 
@@ -19021,6 +19026,14 @@ module.exports = require("assert");
 
 "use strict";
 module.exports = require("buffer");
+
+/***/ }),
+
+/***/ 6206:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("console");
 
 /***/ }),
 

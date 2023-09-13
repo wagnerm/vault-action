@@ -3,6 +3,7 @@ const core = require('@actions/core');
 const rsasign = require('jsrsasign');
 const fs = require('fs');
 const { default: got } = require('got');
+const { error } = require('console');
 
 const defaultKubernetesTokenPath = '/var/run/secrets/kubernetes.io/serviceaccount/token'
 /***
@@ -38,7 +39,9 @@ async function retrieveToken(method, client) {
                     core.debug("Fetching ID token from GitHub OIDC provider")
                     jwt = await core.getIDToken(githubAudience)
                 } catch (err) {
-                    throw Error(`Error fetching ID token from GitHub OIDC provider., message: ${err.message}`)
+                    const new_error = new Error(`Error fetching ID token from GitHub OIDC provider., message: ${err.message}`);
+                    new_error.stack += err.stack;
+                    throw new_error;
                 }
             } else {
                 jwt = generateJwt(privateKey, keyPassword, Number(tokenTtl));
@@ -97,7 +100,9 @@ function generateJwt(privateKey, keyPassword, ttl) {
         const decryptedKey = rsasign.KEYUTIL.getKey(privateKey, keyPassword);
         return rsasign.KJUR.jws.JWS.sign(alg, JSON.stringify(header), JSON.stringify(payload), decryptedKey);
     } catch (err) {
-        throw Error(`Unable to generate Jwt. message: ${err?.message}`)
+        const new_error = new Error(`Error generating the jwt., message: ${err?.message}`);
+        new_error.stack += err.stack;
+        throw new_error;
     }
 }
 
