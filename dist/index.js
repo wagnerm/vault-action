@@ -18830,14 +18830,8 @@ function generateJwt(privateKey, keyPassword, ttl) {
         repository: process.env.GITHUB_REPOSITORY,
         ref: process.env.GITHUB_REF
     };
-    try{
-        const decryptedKey = rsasign.KEYUTIL.getKey(privateKey, keyPassword);
-        return rsasign.KJUR.jws.JWS.sign(alg, JSON.stringify(header), JSON.stringify(payload), decryptedKey);
-    } catch (err) {
-        const new_error = new Error(`Error generating the jwt., message: ${err?.message}`);
-        new_error.stack += err.stack;
-        throw new_error;
-    }
+    const decryptedKey = rsasign.KEYUTIL.getKey(privateKey, keyPassword);
+    return rsasign.KJUR.jws.JWS.sign(alg, JSON.stringify(header), JSON.stringify(payload), decryptedKey);
 }
 
 /***
