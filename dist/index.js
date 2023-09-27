@@ -18737,6 +18737,7 @@ const core = __nccwpck_require__(2186);
 const rsasign = __nccwpck_require__(7175);
 const fs = __nccwpck_require__(7147);
 const { default: got } = __nccwpck_require__(3061);
+const { error } = __nccwpck_require__(6206);
 
 const defaultKubernetesTokenPath = '/var/run/secrets/kubernetes.io/serviceaccount/token'
 /***
@@ -18768,7 +18769,14 @@ async function retrieveToken(method, client) {
             const githubAudience = core.getInput('jwtGithubAudience', { required: false });
 
             if (!privateKey) {
-                jwt = await core.getIDToken(githubAudience)
+                try {
+                    core.debug("Fetching ID token from GitHub OIDC provider")
+                    jwt = await core.getIDToken(githubAudience)
+                } catch (err) {
+                    const new_error = new Error(`Error fetching ID token from GitHub OIDC provider., message: ${err.message}`);
+                    new_error.stack += err.stack;
+                    throw new_error;
+                }
             } else {
                 jwt = generateJwt(privateKey, keyPassword, Number(tokenTtl));
             }
@@ -19012,6 +19020,14 @@ module.exports = require("assert");
 
 "use strict";
 module.exports = require("buffer");
+
+/***/ }),
+
+/***/ 6206:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("console");
 
 /***/ }),
 

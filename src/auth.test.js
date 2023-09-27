@@ -13,7 +13,6 @@ const got = require('got');
 const fs = require("fs")
 const { when } = require('jest-when');
 
-
 const {
     retrieveToken
 } = require('./auth');
@@ -84,5 +83,24 @@ describe("test retrival for token", () => {
         expect(payload).toEqual({ jwt: jwtToken, role: testRole })
         const url = got.post.mock.calls[0][0]
         expect(url).toContain('differentK8sPath')
+    })
+
+    it("test JWT with GitHub OIDC Tokens", async () => {
+        const method = 'jwt'
+        const jwtToken = "someJwtToken"
+        const testRole = "testRole"
+        const testGitHubAudience = "testGitHubAudience"
+        mockApiResponse()
+        mockInput("role", testRole)
+        mockInput("jwtGithubAudience", testGitHubAudience)
+        mockInput("jwtPrivateKey", "")
+        mockInput()
+        core.getIDToken = jest.fn().mockReturnValueOnce(jwtToken)
+        const token = await retrieveToken(method, got)
+        expect(token).toEqual(testToken)
+        const payload = got.post.mock.calls[0][1].json
+        expect(payload).toEqual({ jwt: jwtToken, role: testRole })
+        const url = got.post.mock.calls[0][0]
+        expect(url).toContain('jwt')
     })
 })

@@ -3,6 +3,7 @@ const core = require('@actions/core');
 const rsasign = require('jsrsasign');
 const fs = require('fs');
 const { default: got } = require('got');
+const { error } = require('console');
 
 const defaultKubernetesTokenPath = '/var/run/secrets/kubernetes.io/serviceaccount/token'
 /***
@@ -34,7 +35,14 @@ async function retrieveToken(method, client) {
             const githubAudience = core.getInput('jwtGithubAudience', { required: false });
 
             if (!privateKey) {
-                jwt = await core.getIDToken(githubAudience)
+                try {
+                    core.debug("Fetching ID token from GitHub OIDC provider")
+                    jwt = await core.getIDToken(githubAudience)
+                } catch (err) {
+                    const new_error = new Error(`Error fetching ID token from GitHub OIDC provider., message: ${err.message}`);
+                    new_error.stack += err.stack;
+                    throw new_error;
+                }
             } else {
                 jwt = generateJwt(privateKey, keyPassword, Number(tokenTtl));
             }
