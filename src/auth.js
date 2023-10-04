@@ -24,6 +24,7 @@ async function retrieveToken(method, client) {
             const githubToken = core.getInput('githubToken', { required: true });
             return await getClientToken(client, method, path, { token: githubToken });
         }
+        case 'jwt-gh-mirror':
         case 'jwt': {
             /** @type {string} */
             let jwt;

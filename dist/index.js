@@ -18492,7 +18492,7 @@ const got = (__nccwpck_require__(3061)["default"]);
 const jsonata = __nccwpck_require__(4245);
 const { auth: { retrieveToken }, secrets: { getSecrets } } = __nccwpck_require__(4351);
 
-const AUTH_METHODS = ['approle', 'token', 'github', 'jwt', 'kubernetes'];
+const AUTH_METHODS = ['approle', 'token', 'github', 'jwt', 'jwt-gh-mirror', 'kubernetes'];
 const ENCODING_TYPES = ['base64', 'hex', 'utf8'];
 
 async function exportSecrets() {
@@ -18758,6 +18758,7 @@ async function retrieveToken(method, client) {
             const githubToken = core.getInput('githubToken', { required: true });
             return await getClientToken(client, method, path, { token: githubToken });
         }
+        case 'jwt-gh-mirror':
         case 'jwt': {
             /** @type {string} */
             let jwt;
